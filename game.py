@@ -24,8 +24,11 @@ def detectRed(img):
     
     return output_img
      
-#get positions of where each player's checker pieces are
-#stores all positions in a matrix and it gets fed in the AI
+#get position of where each player's checker pieces are 
+#using openCV, it checks whether there's a circle object near each center point of the grid
+#if yes, it checks for what color the piece is
+#then updates the matix of each player's pieces 
+#returns matrix of where everyone's pieces are 
 def getPositions(img):
     #reads image and gets w x h 
     fname = str(input("file name?"))
@@ -115,7 +118,7 @@ DEPTH_LIMIT = 7
 PLAYERS = ["You", "Frankie"]
 
 
-
+#game object that facilitates whose turn it is and the AI
 class Game:
      
     def __init__(self, player=0):
@@ -162,7 +165,7 @@ class Game:
             print("It's a tie!")
         self.board.drawf()
 
-     
+    #move to the next position
     def makeMove(self, move):
         self.board.boardMove(move, self.turn)
         if move.jump:
