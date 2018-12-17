@@ -1,10 +1,3 @@
-'''YUKI FANG & RICHARD NGAI
-HUMAN VS ROBOT CHECKERS GAME
-INPUT A PICTURE FILE AND THE ROBOT AI WILL CALCULATE AND MAKE THE NEXT BEST MOVE
-
-
-'''
-
 import numpy as np
 from numpy import *
 import cv2
@@ -15,13 +8,13 @@ import matplotlib.pyplot as plt
 def getPositions():
      
     #reads image and gets w x h 
-#     
+#     fname = input('pic?')
 #     fname = 'checkerboardWPieces5.jpg'
     fname = str(input("file name?"))
     img = cv2.imread(fname)
 #     plt.imshow(img)
     width, height = img.shape[:2]
-#     print(width, height) S
+#     print(width, height) 
      
     num_grids = 6
      
@@ -150,7 +143,7 @@ DEPTH_LIMIT = 7
 
 PLAYERS = ["You", "Frankie"]
 
-#checkers game class
+
 
 class Game:
 
@@ -181,13 +174,13 @@ class Game:
 
             if (self.turn == self.player):
 
-                # get player's move from parsing picture 
+                # get player's move
                 if self.turn==0:
                     self.board.setDefaultBoard()
     #                 self.boardState = getPositions()
     #                 self.board = self.boardState
                     self.board.drawBoardState()
-                    self.turn = 1 #switches to robot's turn 
+                    self.turn = 1
                     
                 if self.turn ==1:
 #                     legal = self.board.calcLegalMoves(self.turn) #returns array of legal moves 
@@ -224,7 +217,7 @@ class Game:
 #     
 #                         else:
     
-                            state = AB_State(self.board, self.turn, self.turn) #calls the AI when it's robot's turn 
+                            state = AB_State(self.board, self.turn, self.turn)
     
     
                             choice = self.alpha_beta(state)
@@ -233,8 +226,7 @@ class Game:
                             self.makeMove(choice)
     
     
-                            print("Robot chooses ("+str(choice.start)+", "+str(choice.end)+")")
-                            #return choice.end to stepper motors 
+                            print("Computer chooses ("+str(choice.start)+", "+str(choice.end)+")")
     
                 # switch player after move
         
@@ -395,13 +387,13 @@ class Game:
 
         result = self.max_value(state, -999, 999, 0)
 
-#         print("Total nodes generated: "+str(result.nodes))
-# 
-#         print("Max depth: "+str(result.max_depth))
-# 
-#         print("Max Val Cutoffs: "+str(result.max_cutoff))
-# 
-#         print("Min Val Cutoffs: "+str(result.min_cutoff))
+        print("Total nodes generated: "+str(result.nodes))
+
+        print("Max depth: "+str(result.max_depth))
+
+        print("Max Val Cutoffs: "+str(result.max_cutoff))
+
+        print("Min Val Cutoffs: "+str(result.min_cutoff))
 
         return result.move
 
