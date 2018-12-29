@@ -23,6 +23,32 @@ def detectRed(img):
     output_img = img.copy()
     
     return output_img
+
+#returns matrix of where circles are 
+def detectCircle(img, num_grids):
+    gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)    
+    circles1 = cv2.HoughCircles(gray1, cv2.HOUGH_GRADIENT, 1, 1, param1 = 30, param2 =width/num_grids-18, minRadius=8, maxRadius=22)
+    circles1 = np.uint16(np.around(circles1))
+    #print(circles)
+    return circles1
+
+#updates where col and row corners are of rach grid
+def detectGridCorner(col_corners, row_corners, width, num_grids):
+    for i in range(7):
+        col_corners.append(width/num_grids*i)
+        row_corners.append(height/num_grids*i)
+    return
+
+#return matric of where each grid center is 
+def detectGridCenter(col_corners, row_corners):
+    center_points = []
+    for row in range(len(row_corners)-1):
+        for col in range(len(col_corners)-1):
+            midpt_r = (row_corners[col]+row_corners[col+1])/2
+            midpt_c = (col_corners[row]+col_corners[row+1])/2
+
+            center_points.append((midpt_r, midpt_c))
+    return center_points
      
 #get position of where each player's checker pieces are 
 #using openCV, it checks whether there's a circle object near each center point of the grid
@@ -35,16 +61,17 @@ def getPositions(img):
     img = cv2.imread(fname)
     width, height = img.shape[:2]
     num_grids = 6
+
+    #find red 
     output_img = detectRed(img)
     output_img[np.where(mask==0)] = 0
 
-    #store red circles, green circles, and blank spaces in matrix 
+    #detect where all circles are on board
     img1 = cv2.medianBlur(output_img,5)
-    gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)    
-    circles1 = cv2.HoughCircles(gray1, cv2.HOUGH_GRADIENT, 1, 1, param1 = 30, param2 =width/num_grids-18, minRadius=8, maxRadius=22)
-    circles1 = np.uint16(np.around(circles1))
-    #print(circles)
-    red_piece_centroids = [] #stores center of each detected circle 
+    circles1 = detectCircle(img1, num_grids)
+
+    #store red circles 
+    red_piece_centroids = [] #stores center of each detected red circle 
     for i in circles1[0,:]:
         cv2.circle(img1, (i[0], i[1]), i[2], (0,255,0),2) #draw outer circle 
         cv2.circle(img1, (i[0], i[1]), 2, (0,255,0),3) #draws center of circle
@@ -54,27 +81,12 @@ def getPositions(img):
     #stores bottom left corner of each grid 
     col_corners=[]
     row_corners=[]
-    for i in range(7):
-        col_corners.append(width/num_grids*i)
-        row_corners.append(height/num_grids*i)
-    #print(col_corners)
-    corners=[]
-    for r in range(len(row_corners)):
-        for c in range(len(col_corners)):
-            corners.append((col_corners[c], row_corners[r]))
-    #print(corners)
-     
+    detectGridCorner(col_corners, row_corners, width, num_grids)
       
     #stores center point of grids
-    center_points = []
-    for row in range(len(row_corners)-1):
-        for col in range(len(col_corners)-1):
-            midpt_r = (row_corners[col]+row_corners[col+1])/2
-            midpt_c = (col_corners[row]+col_corners[row+1])/2
-             
-            center_points.append((midpt_r, midpt_c))
+    center_points = detectGridCenter(col_corners, row_corners)
      
-    #returns image of detected circles     
+    #returns image of all detected circles     
     img = cv2.medianBlur(img,5)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 1, param1 = 30, param2 =width/num_grids-18, minRadius=8, maxRadius=22)
